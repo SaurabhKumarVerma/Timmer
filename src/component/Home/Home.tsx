@@ -1,10 +1,11 @@
-import { Button, SectionList, StyleSheet, Text, TextInput, View, ScrollView, Pressable, Modal, useWindowDimensions } from 'react-native';
+import { Button, SectionList, StyleSheet, Text, TextInput, View, Pressable, Modal, useWindowDimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import * as Progress from 'react-native-progress';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { EACTION, ECATEOGRY, ITimer } from '../../types/type';
 import { LOGS_KEY, TIMERS_KEY } from '../../constant/constant';
+import { color } from '../../theme/appColor';
+import { useTheme } from '@react-navigation/native';
 
 const Home = () => {
   const [name, setName] = useState<string>('');
@@ -13,9 +14,9 @@ const Home = () => {
   const [timers, setTimers] = useState([]);
   const [logs, setLogs] = useState([]);
   const [expandedSections, setExpandedSections] = useState({});
-  const insets = useSafeAreaInsets()
   const [isModalVisible, setModalVisible] = useState<boolean>(false)
   const {width} = useWindowDimensions()
+  const { colors } = useTheme();
 
   const categories = ['Workout', 'Study', 'Break', 'Other'];
 
@@ -171,8 +172,7 @@ const Home = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>🎉 Congratulations! 🎉</Text>
-            <Text style={styles.modalSubText}>You completed</Text>
+            <Text style={styles.modalText}>Completed!</Text>
             <Button title="OK" onPress={() => setModalVisible(false)} />
           </View>
         </View>
@@ -182,8 +182,9 @@ const Home = () => {
 
 
   return (
-    <ScrollView style={[styles.container]}>
+    <View style={[styles.container]}>
       {showCompletedModal()}
+
       <Text style={styles.label}>Timer Name:</Text>
       <TextInput
         style={styles.input}
@@ -207,7 +208,7 @@ const Home = () => {
           <Button
             key={cat}
             title={cat}
-            color={category === cat ? '#007AFF' : '#cccccc'}
+            color={category === cat ? color.blue : color.grey}
             onPress={() => setCategory(cat as ECATEOGRY)}
           />
         ))}
@@ -218,24 +219,36 @@ const Home = () => {
       </Pressable>
 
       <SectionList
+      style={{marginBottom: '20%'}}
+      showsVerticalScrollIndicator={false}
         sections={sections as readonly {title: string, data: ITimer[]}[]}
+        ListFooterComponent={() => (
+          <View style={{ marginBottom: '20%' }} />
+        )}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={styles.timerCard}>
+          <View style={[styles.timerCard, {backgroundColor: colors.card}]}>
             <View style={styles.timerInfo}>
               <Text style={styles.timerName}>{item.name}</Text>
               <Text style={styles.timerTime}>
-                {item.timeLeft}s remaining ({item.duration}s total)
+               {item?.timeLeft === 0 ? 'Completed' : (
+                <>
+                  {item.timeLeft}s remaining ({item.duration}s total)
+                </>
+               ) } 
               </Text>
               <View style={styles.timerControls}>
-                <Button
-                  title={item.isRunning ? 'Pause' : 'Start'}
+                <Pressable
                   onPress={() => toggleTimer(item.id)}
-                />
-                <Button
-                  title="Reset"
+                >
+                  <Text>{item.isRunning ? 'Pause' : 'Start'}</Text>
+                </Pressable>
+                <Pressable
                   onPress={() => resetTimer(item.id)}
-                />
+                  style={{marginLeft: 10}}
+                >
+                  <Text>Reset</Text>
+                </Pressable>
               </View>
             </View>
             <Progress.Circle
@@ -243,45 +256,36 @@ const Home = () => {
               size={60}
               showsText
               formatText={() => `${item.timeLeft}s`}
-              color={item.isRunning ? '#007AFF' : '#cccccc'}
+              color={item.isRunning ? color.blue : color.black}
               strokeCap="round"
             />
           </View>
         )}
         renderSectionHeader={({ section: { title } }) => (
-          <Pressable onPress={() => toggleSection(title)} style={styles.sectionHeader}>
+          <Pressable onPress={() => toggleSection(title)} style={[styles.sectionHeader, {backgroundColor: colors.card}]}>
             <Text style={styles.sectionTitle}>{title}</Text>
             <View style={styles.bulkControls}>
-              <Button title="▶ All" onPress={() => handleBulkAction(title, EACTION.START)} />
-              <Button title="⏸ All" onPress={() => handleBulkAction(title, EACTION.PAUSE)} />
-              <Button title="↺ Reset" onPress={() => handleBulkAction(title, EACTION.RESET)} />
+              <Pressable onPress={() => handleBulkAction(title, EACTION.START)} >
+                <Text>Start All</Text>
+              </Pressable>
+              <Pressable onPress={() => handleBulkAction(title, EACTION.PAUSE)} >
+                <Text>Pause All</Text>
+              </Pressable>
+              <Pressable onPress={() => handleBulkAction(title, EACTION.RESET)} >
+                <Text>Reset</Text>
+              </Pressable>
             </View>
           </Pressable>
         )}
       />
-
-      {/* <Text style={styles.logsTitle}>Activity Logs</Text>
-      <FlatList
-        data={logs}
-        style={{ paddingBottom: '30%' }}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.logItem}>
-            <Text style={styles.logText}>
-              {item.timerName} ({item.category}) - {item.duration}s completed at{' '}
-              {new Date(item.completedAt).toLocaleString()}
-            </Text>
-          </View>
-        )}
-      /> */}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    padding: 20,
+    flex: 1,
+    padding: 4,
 
   },
   input: {
@@ -306,11 +310,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
     marginVertical: 5,
-    backgroundColor: '#f8f8f8',
     borderRadius: 10,
   },
   timerInfo: {
-    flex: 1,
   },
   timerName: {
     fontWeight: 'bold',
@@ -322,10 +324,8 @@ const styles = StyleSheet.create({
   },
   timerControls: {
     flexDirection: 'row',
-    gap: 10,
   },
   sectionHeader: {
-    backgroundColor: '#e0e0e0',
     padding: 10,
     marginTop: 20,
     borderRadius: 5,
@@ -340,22 +340,6 @@ const styles = StyleSheet.create({
     gap: 10,
     marginTop: 5,
   },
-  logsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  logItem: {
-    padding: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  logText: {
-    color: '#666',
-    fontSize: 12,
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -363,7 +347,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: color.white,
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
@@ -373,17 +357,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  modalSubText: {
-    fontSize: 16,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
   timerButton: {
     alignSelf: 'center', 
     backgroundColor:'#E5E4E2', 
     paddingVertical: 12, 
     paddingHorizontal: 10, 
-    borderRadius: 6
+    borderRadius: 6,
+    marginBottom: '2%'
   }
 });
 

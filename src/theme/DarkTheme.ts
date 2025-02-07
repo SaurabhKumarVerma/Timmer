@@ -6,7 +6,7 @@ const DarkTheme: Theme = {
     colors: {
         primary: 'orange',
         background: color.black,
-        card: '#262626',
+        card: color.beige,
         text: color.white,
         border: '#262626',
         notification: ""

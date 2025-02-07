@@ -30,3 +30,14 @@ export enum ESCREEN {
   HOME_SCREEN = 'Home',
   HISTORY_SCREEN = 'History',
 }
+
+export interface IMenuItem {
+  label: string;
+  onSelect: () => void;
+  icon: string;
+}
+
+export enum EMODE {
+  DARK = 'dark',
+  LIGHT = 'light'
+}

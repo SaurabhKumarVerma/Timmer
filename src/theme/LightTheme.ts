@@ -3,12 +3,13 @@ import { color } from "./appColor";
 
 const LightTheme:Theme = {
     colors: {
-        background: '#F2F0F7',
+        background: color.lavender,
         text: color.black,
         primary: "",
-        card: "",
+        card: color.bone,
         border: "",
-        notification: ""
+        notification: "",
+        
     },
     dark: false,
     fonts: {

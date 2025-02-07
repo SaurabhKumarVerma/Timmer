@@ -80,9 +80,7 @@ const BottomIcon = (props: IBottomIcon) => {
 
 const styles = StyleSheet.create({
   container: {
-    alignContent: "center",
     alignItems: "center",
-    alignSelf: "center",
     borderRadius: 24,
     zIndex: 1,
   },

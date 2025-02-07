@@ -2,11 +2,14 @@ import { StyleSheet, View, Pressable } from "react-native"
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs"
 import BottomIcon from "./BottomIcon"
 import { BOTTOM_BAR_HEIGHT } from "../../constant/constant"
+import { color } from "../../theme/appColor"
+import { useTheme } from "@react-navigation/native"
 
 const CustomBottomTabBar = ({ state, descriptors, navigation }: BottomTabBarProps) => {
-  const MARGIN = 20
+  const { colors } = useTheme();
+  const MARGIN = 0
   return (
-    <View style={[styles.container, { bottom: MARGIN,}]}>
+    <View style={[styles.container, { bottom: MARGIN, backgroundColor: colors.background}]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key]
 
@@ -63,7 +66,7 @@ const styles = StyleSheet.create({
     left: 1,
     right: 1,
     borderTopWidth: 1,
-    borderTopColor: '#36454F'
+    borderTopColor: '#36454F',
   },
   content: {
     alignItems: "center",
