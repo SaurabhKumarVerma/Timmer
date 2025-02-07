@@ -1,4 +1,4 @@
-[# Timmer
+# Timmer
 - [Github Project Link](https://github.com/SaurabhKumarVerma/Timmer)
 
 ```bash
