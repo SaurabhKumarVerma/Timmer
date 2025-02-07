@@ -40,3 +40,18 @@ npm run ios
 # OR using Yarn
 yarn ios
 ```
+
+## Approach
+### This is a React Native project that follows a modular **Component/Screen folder structure** pattern. Each screen is built using multiple smaller components, making the codebase more maintainable, reusable, and scalable.
+
+# 🛠️ Features
+
+- Timer creation and management.
+- Grouping and bulk actions.
+- Progress visualization.
+- History tracking.
+- Toggle Theme.
+- Maintain a log of completed timers with:
+  Timer name.
+  Completion time.
+- Display a notification or message when the alert triggers.
